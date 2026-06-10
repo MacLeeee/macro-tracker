@@ -56,4 +56,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # 首次运行自动创建 Pages 项目，已存在则忽略报错
+          preCommands: wrangler pages project create macro-dashboard --production-branch=main || true
           command: pages deploy site --project-name=macro-dashboard
