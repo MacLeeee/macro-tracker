@@ -1,0 +1,78 @@
+indicators:
+  akshare_china_industrial:
+    description: 中国工业增加值及增长率数据
+    enabled: true
+    function: macro_china_gyzjz
+    name: 中国工业增加值
+    params: {}
+    source: akshare
+    table_name: china_industrial_data
+    update_frequency: monthly
+  akshare_china_m2:
+    description: 中国广义货币M2供应量及同比增长率数据
+    enabled: true
+    function: macro_china_supply_of_money
+    name: 中国M2货币供应量
+    params: {}
+    source: akshare
+    table_name: china_m2_data
+    update_frequency: monthly
+  akshare_hs300_index:
+    description: 沪深300指数历史价格数据
+    enabled: true
+    function: stock_zh_index_daily_tx
+    name: 沪深300指数
+    params:
+      symbol: sh000300
+    source: akshare
+    table_name: hs300_index_data
+    update_frequency: daily
+  akshare_zz2000_index:
+    description: 中证2000指数(国证2000)历史价格数据
+    enabled: true
+    function: stock_zh_index_daily_tx
+    name: 中证2000指数(国证2000)
+    params:
+      symbol: sz399303
+    source: akshare
+    table_name: zz2000_index_data
+    update_frequency: daily
+  openbb_btc_price:
+    default_start_date: '2020-01-01'
+    description: 比特币对美元的历史价格数据
+    enabled: true
+    function: crypto.price.historical
+    name: 比特币价格
+    params:
+      interval: 1d
+      provider: yfinance
+      symbol: BTC-USD
+    source: openbb
+    table_name: btc_price_data
+    update_frequency: daily
+  openbb_dxy_index:
+    default_start_date: '2020-01-01'
+    description: 美元指数(DXY)历史数据
+    enabled: true
+    function: equity.price.historical
+    name: 美元指数
+    params:
+      interval: 1d
+      provider: yfinance
+      symbol: DX-Y.NYB
+    source: openbb
+    table_name: dxy_index_data
+    update_frequency: daily
+  openbb_nasdaq_index:
+    default_start_date: '2020-01-01'
+    description: 纳斯达克综合指数历史数据
+    enabled: true
+    function: equity.price.historical
+    name: 纳斯达克指数
+    params:
+      interval: 1d
+      provider: yfinance
+      symbol: ^IXIC
+    source: openbb
+    table_name: nasdaq_index_data
+    update_frequency: daily

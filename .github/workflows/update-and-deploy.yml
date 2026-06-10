@@ -1,0 +1,59 @@
+name: 更新数据并部署到 Cloudflare Pages
+
+on:
+  schedule:
+    # UTC 01:30 = 北京时间 09:30，每天一次
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-and-deploy
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 更新数据
+        # 允许部分数据源失败，图表回退到数据库既有数据
+        run: python scripts/update_data.py
+        continue-on-error: true
+
+      - name: 生成静态站点
+        run: python scripts/build_site.py
+
+      - name: 提交更新后的数据库
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.db config/indicators.yaml
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: 自动更新数据 $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')"
+            git push
+          else
+            echo "数据无变化，跳过提交"
+          fi
+
+      - name: 部署到 Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=macro-dashboard
